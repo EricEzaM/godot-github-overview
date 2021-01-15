@@ -1,11 +1,13 @@
 ﻿using Octokit;
 using Octokit.Internal;
+using Octokit.Reactive;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GodotGithubOverview
@@ -18,46 +20,53 @@ namespace GodotGithubOverview
 		static async Task Main(string[] args)
 		{
 			Environment.SetEnvironmentVariable("GITHUB_TOKEN", "your-token-here");
+			Environment.SetEnvironmentVariable("GITHUB_TOKEN", "688f11cbbc1a62942edb58467241154a140ed5c7");
 
-			var client = new GitHubClient(
+			var client = new ObservableGitHubClient(
 				new ProductHeaderValue("GodotGithubOverview"),
 				new InMemoryCredentialStore(
 					new Credentials(Environment.GetEnvironmentVariable("GITHUB_TOKEN")))
 				);
 
-			var limit = await client.Miscellaneous.GetRateLimits();
-			Console.WriteLine($"Github API Rate Limit: {limit.Resources.Core.Remaining} of {limit.Resources.Core.Limit} remaining");
-
+			var limit = await client.Miscellaneous.GetRateLimits().Do(limit =>
+				{
+					Console.WriteLine($"Github API Rate Limit: {limit.Resources.Core.Remaining} of {limit.Resources.Core.Limit} remaining");
+				});
 
 			// Fetch PRs and Files one after the other (awaited) otherwise Github will slap us with abuse limits
 			Console.WriteLine($"Fetching all Pull Requests for {OWNER}/{REPO}...");
-			var prs = (await client.PullRequest.GetAllForRepository(OWNER, REPO, new PullRequestRequest { State = ItemStateFilter.Open }))
-				.Select(async pr =>
+
+			List<PullRequestDTO> prs = new List<PullRequestDTO>();
+			await client.PullRequest
+				.GetAllForRepository(OWNER, REPO, new PullRequestRequest { State = ItemStateFilter.Open })
+				.Do(pr =>
 				{
-					Console.WriteLine($"Fetching file information for PR #{pr.Number}...");
-
-					// Create DTO Based on returned PR, and fill with files from another API call
-					var prDto = new PullRequestDTO(pr)
-					{
-						Files = (await client.PullRequest
-						.Files(OWNER, REPO, pr.Number))
-						.Select(file => new PullRequestFileDTO(file))
-						.ToList()
-					};
-
-					// Calculate total additions and deletions based on the files
-					prDto.Additions = prDto.Files.Sum(f => f.Additions);
-					prDto.Deletions = prDto.Files.Sum(f => f.Deletions);
-
-					return prDto;
+					Console.WriteLine($"Got PR {pr.Number}: {prs.Count} PRs completed.");
+					prs.Add(new PullRequestDTO(pr));
 				});
 
-			var allPrs = (await Task.WhenAll(prs)).ToList();
+			// Fetch the files for each PR
+			// This must be syncronous to avoid github abuse rate limits.
+			for (int i = 0; i < prs.Count; i++)
+			{
+				var pr = prs[i];
+
+				Console.WriteLine($"Fetching Files for PR {i}/{prs.Count}");
+				var hello = client.PullRequest
+					.Files(OWNER, REPO, pr.Number)
+					.Select(file => new PullRequestFileDTO(file))
+					.ToList();
+
+				// Calculate total additions and deletions based on the files
+				pr.Additions = pr.Files.Sum(f => f.Additions);
+				pr.Deletions = pr.Files.Sum(f => f.Deletions);
+			}
+
 			// Wait for all PRs to be done.
 			Console.WriteLine($"Pull Requests & Files Fetched Successfully");
 
 			// Save to file
-			var text = JsonSerializer.Serialize(allPrs, new JsonSerializerOptions
+			var text = JsonSerializer.Serialize(prs, new JsonSerializerOptions
 			{
 				WriteIndented = true
 			});
