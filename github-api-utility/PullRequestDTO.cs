@@ -45,7 +45,7 @@ namespace GodotGithubOverview
 			Number = pr.Number;
 			Title = pr.Title;
 			Url = pr.HtmlUrl;
-			Username = pr.User.Name;
+			Username = pr.User.Login;
 			Labels = pr.Labels.Select(l => new LabelDTO { Name = l.Name, Color = l.Color }).ToList();
 			Additions = pr.Additions;
 			Deletions = pr.Deletions;
