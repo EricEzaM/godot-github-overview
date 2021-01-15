@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="author" content="Godot Engine" />
+		<meta name="description" content="View Godot Pull Requests" />
+		<title>Godot Pull Requests</title>
+		<link rel="icon" href="favicon.png" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="thirdparty/tailwind.min.css" />
+		<script defer src="thirdparty/ky.umd.min.js"></script>
+		<script defer src="thirdparty/alpine.min.js"></script>
+		<script src="js/index.js"></script>
+	</head>
+	<body>
+		<main class="container mx-auto">
+			<h1 class="text-center">Godot Pull Requests</h1>
+			<div x-data="table()" x-init="loadPrs()">
+				<table>
+					<thead>
+						<tr>
+							<th>Hi</th>
+							<th>Title</th>
+							<th>Stuffs</th>
+						</tr>
+					</thead>
+					<tbody>
+						<template x-for="pr in prs" :key="pr.Number">
+							<tr>
+								<td>
+									<span x-text="`#${pr.Number}`"></span>
+								</td>
+								<td>
+									<a href="pr.Url" x-text="pr.Title"></a>
+								</td>
+								<td>
+									<span x-text="`${pr.Additions}`"></span>
+								</td>
+							</tr>
+						</template>
+					</tbody>
+				</table>
+			</div>
+		</main>
+	</body>
+</html>
