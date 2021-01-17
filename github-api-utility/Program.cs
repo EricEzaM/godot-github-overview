@@ -20,13 +20,13 @@ namespace GodotGithubOverview
 
 		static async Task Main(string[] args)
 		{
-			Environment.SetEnvironmentVariable("GITHUB_TOKEN", "your-token-here");
-			Environment.SetEnvironmentVariable("GITHUB_TOKEN", "688f11cbbc1a62942edb58467241154a140ed5c7");
-
+#if DEBUG
+			Environment.SetEnvironmentVariable("ACCESS_TOKEN", "your-token-here");
+#endif
 			var client = new ObservableGitHubClient(
 				new ProductHeaderValue("GodotGithubOverview"),
 				new InMemoryCredentialStore(
-					new Credentials(Environment.GetEnvironmentVariable("GITHUB_TOKEN")))
+					new Credentials(Environment.GetEnvironmentVariable("ACCESS_TOKEN")))
 				);
 
 			var limit = await client.Miscellaneous.GetRateLimits().Do(limit =>
