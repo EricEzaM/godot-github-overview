@@ -4,6 +4,7 @@ function page()
     prs: [],
     files: [],
     labels: [],
+    metadata: {},
     currentSortBy: null,
     currentSortAsc: true,
     dataLoaded: false,
@@ -11,8 +12,10 @@ function page()
     async loadPrs() {
       const prsJson = await ky.get(`prs.json`).json()
       const filesJson = await ky.get(`files.json`).json()
+      const metadataJson = await ky.get(`metadata.json`).json()
       this.prs = prsJson
       this.files = filesJson
+      this.metadata = metadataJson
 
       this.setLabels(this.prs)
       this.sortPullRequests('Changes')
