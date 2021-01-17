@@ -1,0 +1,56 @@
+table {
+  border-spacing: 0px;
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 15px;
+  background-color: transparent;
+  text-align: left;
+}
+
+thead {
+  font-weight: bold;
+}
+
+th {
+  /* display: inline-flex; */
+  align-items: center;
+
+  padding: 0 0.5rem;
+  white-space: nowrap;
+  cursor: pointer;
+  border-width: 2px;
+}
+
+th > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+tr:hover {
+  background-color: hsla(0, 0%, 50%, 0.075);
+}
+
+tr:nth-child(even) {
+  background-color: hsla(0, 0%, 50%, 0.1);
+}
+
+tr:nth-child(even):hover {
+  background-color: hsla(0, 0%, 50%, 0.175);
+}
+
+th:hover {
+  background-color: hsla(0, 0%, 50%, 0.175);
+}
+
+td {
+  padding: 0 .5rem;
+}
+
+a:hover {
+  filter: brightness(117.5%);
+}
+
+a:active {
+  filter: brightness(82.5%);
+}

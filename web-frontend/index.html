@@ -9,33 +9,99 @@
 		<link rel="icon" href="favicon.png" />
 		<link rel="stylesheet" href="css/main.css" />
 		<link rel="stylesheet" href="thirdparty/tailwind.min.css" />
+		<link rel="stylesheet" href="thirdparty/remixicon/remixicon.css" />
 		<script defer src="thirdparty/ky.umd.min.js"></script>
 		<script defer src="thirdparty/alpine.min.js"></script>
 		<script src="js/index.js"></script>
 	</head>
-	<body>
+	<body x-data="page()" x-init="loadPrs()" class="max-w-screen-xl mx-auto font-sans leading-relaxed	text-gray-800">
 		<main class="container mx-auto">
-			<h1 class="text-center">Godot Pull Requests</h1>
-			<div x-data="table()" x-init="loadPrs()">
+
+			<h1 class="font-bold text-4xl text-center my-10 text-gray-700">Godot Pull Requests</h1>
+
+			<p>View pull Requests for <a class="text-blue-500" href="https://github.com/godotengine/godot">godotengine/godot</a>.</p>
+
+			<ul class="list-disc list-inside pl-5">
+				<li>Click on headers to sort the table.</li>
+				<li>Hover over headers and rows for more info.</li>
+				<li>Click on Title to go to the Pull Request page.</li>
+			</ul>
+
+			<br>
+
+			<div>
 				<table>
 					<thead>
-						<tr>
-							<th>Hi</th>
-							<th>Title</th>
-							<th>Stuffs</th>
+						<tr class="text-left">
+							<th @click="sortPullRequests('Number')">
+								<div title="Pull Request Number. Higher = newer, lower = older.">
+									<span>PR</span>
+									<i x-spread="iconClasses('Number')"></i>
+								</div>
+							</th>
+							<th>
+								<div>
+									<span>Title</span>
+								</div>
+							</th>
+							<th @click="sortPullRequests('CreatedAtUtc')">
+								<div title="Time since Pull Request was created.">
+									<span class="mr-5">Age</span>
+									<i x-spread="iconClasses('CreatedAtUtc')"></i>
+								</div>
+							</th>
+							<th @click="sortPullRequests('Additions')">
+								<div title="Number of lines of code added in the Pull Request.">
+									<span>+</span>
+									<i x-spread="iconClasses('Additions')"></i>
+								</div>
+							</th>
+							<th @click="sortPullRequests('Deletions')">
+								<div title="Number of lines of code deleted in the Pull Request.">
+									<span>-</span>
+									<i x-spread="iconClasses('Deletions')"></i>
+								</div>
+							</th>
+							<th @click="sortPullRequests('Changes')">
+								<div title="Additions + Deletions.">
+									<span>+/-</span>
+									<i x-spread="iconClasses('Changes')"></i>
+								</div>
+							</th>
+							<th @click="sortPullRequests('ChangedFiles')">
+								<div title="Number of files changed the Pull Request.">
+									<span class="mr-5"># Files</span>
+									<i x-spread="iconClasses('ChangedFiles')"></i>
+								</div>
+							</th>
 						</tr>
 					</thead>
 					<tbody>
 						<template x-for="pr in prs" :key="pr.Number">
 							<tr>
-								<td>
-									<span x-text="`#${pr.Number}`"></span>
+								<td class="pr-5">
+									<a x-bind:href="pr.Url" x-text="`#${pr.Number}`"></a>
 								</td>
 								<td>
-									<a href="pr.Url" x-text="pr.Title"></a>
+									<a x-bind:href="pr.Url" x-text="pr.Title" target="_blank" class="text-blue-500"></a>
+									<template x-if="pr.Draft == true">
+										<span class="font-bold">[DRAFT]</span>
+									</template>
+								</td>
+								<td class="whitespace-nowrap">
+									<span x-text="getAge(pr.CreatedAtUtc)"></span>
 								</td>
 								<td>
-									<span x-text="`${pr.Additions}`"></span>
+									<span class="text-green-700" x-text="`+${pr.Additions.toLocaleString()}`"></span>
+								</td>
+								<td>
+									<span class="text-red-700" x-text="`-${pr.Deletions.toLocaleString()}`"></span>
+								</td>
+								<td>
+									<span class="text-black" x-text="`+${pr.Changes.toLocaleString()}`"></span>
+								</td>
+								<td>
+									<span x-text="`${pr.ChangedFiles.toLocaleString()}`"></span>
 								</td>
 							</tr>
 						</template>
