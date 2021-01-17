@@ -1,0 +1,32 @@
+name: Continuous integration
+on:
+  push:
+  schedule:
+    # Every day at midnight (UTC).
+    # Updates data
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.X
+
+        # Restore and run .NET
+      - name: Build Script
+        run: ./build.sh
+
+        # GH Pages Deployment
+      - name: GH Pages Deployment
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: ./web-frontend
+          SINGLE_COMMIT: true
+
