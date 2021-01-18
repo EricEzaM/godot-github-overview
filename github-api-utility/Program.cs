@@ -35,6 +35,7 @@ namespace GodotGithubOverview
 				});
 
 			Console.WriteLine($"Fetching all Pull Requests for {OWNER}/{REPO}...");
+
 			List<PullRequestDTO> prs = new List<PullRequestDTO>();
 			await client.PullRequest
 				.GetAllForRepository(OWNER, REPO, new PullRequestRequest { State = ItemStateFilter.Open })
@@ -47,9 +48,7 @@ namespace GodotGithubOverview
 			Console.WriteLine($"All Pull Requests Fetched Successfully.");
 			Console.WriteLine($"Fetching Files for all Pull Requests...");
 
-			// Fetch the files for each PR
-			// This must be syncronous to avoid github abuse rate limits.
-			// From Github API Best Practices: 
+			// Fetch the files for each PR. This must be syncronous to avoid github abuse rate limits. From Github API Best Practices: 
 			// "Make requests for a single user or client ID serially. Do not make requests for a single user or client ID concurrently."
 			for (int i = 0; i < prs.Count; i++)
 			{
