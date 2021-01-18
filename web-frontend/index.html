@@ -17,27 +17,58 @@
 	<body x-data="page()" x-init="loadPrs()" class="max-w-screen-xl mx-auto font-sans leading-relaxed	text-gray-800">
 		<main class="container mx-auto">
 
-			<h1 class="font-bold text-4xl text-center my-10 text-gray-700">Godot Pull Requests</h1>
+			<div class="my-10">
+				<h1 class="font-bold text-4xl text-center text-gray-700">Godot Pull Requests</h1>
+				<p x-show="dataLoaded" class="mt-2 text-center text-sm">
+					<span>Last Updated: </span>
+					<span x-text="`${new Date(metadata.LastUpdated).toLocaleDateString()} ${new Date(metadata.LastUpdated).toLocaleTimeString()} Local Time`"></span>
+				</p>
+			</div>
 
 			<p>View pull Requests for <a class="text-blue-500" href="https://github.com/godotengine/godot">godotengine/godot</a>.</p>
 
 			<ul class="list-disc list-inside pl-5">
 				<li>Click on headers to sort the table.</li>
-				<li>Hover over headers and rows for more info.</li>
+				<li>Hover over headers for more information.</li>
 				<li>Click on Title to go to the Pull Request page.</li>
 			</ul>
 
-			<p x-text="`Last Updated ${new Date(metadata.LastUpdated).toLocaleDateString()} ${new Date(metadata.LastUpdated).toLocaleTimeString()} Local Time`"></p>
-
-			<p x-text="`There Are ${prs.filter(pr => pr.Changes <= 5).length} PRs with less than 5 lines changed`"></p>
-			<p x-text="`There Are ${prs.filter(pr => pr.Changes <= 10).length} PRs with less than 10 lines changed`"></p>
-			<p x-text="`There Are ${prs.filter(pr => pr.Changes <= 25).length} PRs with less than 25 lines changed`"></p>
-			<p x-text="`There Are ${prs.filter(pr => pr.Changes <= 50).length} PRs with less than 50 lines changed`"></p>
-			<p x-text="`There Are ${prs.filter(pr => pr.Changes <= 100).length} PRs with less than 100 lines changed`"></p>
-
+			<div x-show="!dataLoaded" class="w-full text-center text-2xl mt-3">
+				<span>Data Loading...</span>
+				<i class="ml-3 absolute loading-spinner ri-refresh-fill"></i>
+			</div>
+			
+			<template x-if="dataLoaded">
+				<h3 class="text-center font-bold text-lg">Pull Request Impact Overview</h3>
+				<div class="flex">
+					<div class="flex mx-auto">
+						<div class="px-3 flex-initial bg-green-500 rounded-l-md">
+							<span class="font-semibold">&leq; 5 Changes: </span>
+							<span class="font-bold" x-text="`${prs.filter(pr => pr.Changes <= 5).length} PRs`"></span>
+						</div>
+						<div class="px-3 flex-initial bg-green-400">
+							<span class="font-semibold">&leq; 10 Changes: </span>
+							<span class="font-bold" x-text="`${prs.filter(pr => pr.Changes <= 10).length} PRs`"></span>
+						</div>
+						<div class="px-3 flex-initial bg-green-300">
+							<span class="font-semibold">&leq; 25 Changes: </span>
+							<span class="font-bold" x-text="`${prs.filter(pr => pr.Changes <= 25).length} PRs`"></span>
+						</div>
+						<div class="px-3 flex-initial bg-green-200">
+							<span class="font-semibold">&leq; 50 Changes: </span>
+							<span class="font-bold" x-text="`${prs.filter(pr => pr.Changes <= 50).length} PRs`"></span>
+						</div>
+						<div class="px-3 flex-initial bg-green-100 rounded-r-md">
+							<span class="font-semibold">&leq; 100 Changes: </span>
+							<span class="font-bold" x-text="`${prs.filter(pr => pr.Changes <= 100).length} PRs`"></span>
+						</div>
+					</div>
+				</div>
+			</template>
 			<br>
 
-			<div>
+			<div x-show="dataLoaded">
+				<h3 class="text-center font-bold text-lg">Pull Requests</h3>
 				<table>
 					<thead>
 						<tr class="text-left">

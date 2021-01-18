@@ -54,3 +54,11 @@ a:hover {
 a:active {
   filter: brightness(82.5%);
 }
+
+.loading-spinner {
+  animation: spin 1s linear infinite
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
