@@ -33,34 +33,52 @@
 				<li>Click on Title to go to the Pull Request page.</li>
 			</ul>
 
+			<details>
+				<summary>
+					Icons & Colors Legend
+				</summary>
+
+				<div class="ml-1 pl-5 border-l-2 border-black">
+					<p><span class="text-blue-600">PR is not in draft status</span> / <span class="text-gray-900">PR is in draft status</span> / <span class="text-green-600">PR has been reviewed & approved</span></p>
+					<div>
+						<i class="ri-check-line align-middle text-green-600"></i><span>PR is Mergeable</span>
+					</div>
+					<div>
+						<i class="ri-close-line align-middle text-red-600"></i><span>PR is not Mergeable</span>
+					</div>
+				</div>
+			</details>
+
 			<div x-show="!dataLoaded" class="w-full text-center text-2xl mt-3">
 				<span>Data Loading...</span>
 				<i class="ml-3 absolute loading-spinner ri-refresh-fill"></i>
 			</div>
 			
 			<template x-if="dataLoaded">
-				<h3 class="text-center font-bold text-lg">Pull Request Impact Overview</h3>
-				<div class="flex">
-					<div class="flex mx-auto">
-						<div class="px-3 flex-initial bg-green-500 rounded-l-md">
-							<span class="font-semibold">&leq; 5 Changes: </span>
-							<span class="font-bold" x-text="`${prs.filter(pr => pr.Changes <= 5).length} PRs`"></span>
-						</div>
-						<div class="px-3 flex-initial bg-green-400">
-							<span class="font-semibold">&leq; 10 Changes: </span>
-							<span class="font-bold" x-text="`${prs.filter(pr => pr.Changes <= 10).length} PRs`"></span>
-						</div>
-						<div class="px-3 flex-initial bg-green-300">
-							<span class="font-semibold">&leq; 25 Changes: </span>
-							<span class="font-bold" x-text="`${prs.filter(pr => pr.Changes <= 25).length} PRs`"></span>
-						</div>
-						<div class="px-3 flex-initial bg-green-200">
-							<span class="font-semibold">&leq; 50 Changes: </span>
-							<span class="font-bold" x-text="`${prs.filter(pr => pr.Changes <= 50).length} PRs`"></span>
-						</div>
-						<div class="px-3 flex-initial bg-green-100 rounded-r-md">
-							<span class="font-semibold">&leq; 100 Changes: </span>
-							<span class="font-bold" x-text="`${prs.filter(pr => pr.Changes <= 100).length} PRs`"></span>
+				<div>
+					<h3 class="text-center font-bold text-lg">Pull Request Impact Overview</h3>
+					<div class="flex">
+						<div class="flex mx-auto">
+							<div class="px-3 flex-initial bg-green-500 rounded-l-md">
+								<span class="font-semibold">&leq; 5 Changes: </span>
+								<span class="font-bold" x-text="`${prs.filter(pr => pr.changes <= 5).length} PRs`"></span>
+							</div>
+							<div class="px-3 flex-initial bg-green-400">
+								<span class="font-semibold">&leq; 10 Changes: </span>
+								<span class="font-bold" x-text="`${prs.filter(pr => pr.changes <= 10).length} PRs`"></span>
+							</div>
+							<div class="px-3 flex-initial bg-green-300">
+								<span class="font-semibold">&leq; 25 Changes: </span>
+								<span class="font-bold" x-text="`${prs.filter(pr => pr.changes <= 25).length} PRs`"></span>
+							</div>
+							<div class="px-3 flex-initial bg-green-200">
+								<span class="font-semibold">&leq; 50 Changes: </span>
+								<span class="font-bold" x-text="`${prs.filter(pr => pr.changes <= 50).length} PRs`"></span>
+							</div>
+							<div class="px-3 flex-initial bg-green-100 rounded-r-md">
+								<span class="font-semibold">&leq; 100 Changes: </span>
+								<span class="font-bold" x-text="`${prs.filter(pr => pr.changes <= 100).length} PRs`"></span>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -72,75 +90,78 @@
 				<table>
 					<thead>
 						<tr class="text-left">
-							<th @click="sortPullRequests('Number')">
+							<th @click="sortPullRequests('number')">
 								<div title="Pull Request Number. Higher = newer, lower = older.">
 									<span>PR</span>
-									<i x-spread="iconClasses('Number')"></i>
+									<i x-spread="iconClasses('number')"></i>
 								</div>
 							</th>
 							<th>
-								<div>
+								<div title="Title. Icon Tick = Mergeable, Icon Cross = Not Mergeable.">
 									<span>Title</span>
 								</div>
 							</th>
-							<th @click="sortPullRequests('CreatedAtUtc')">
+							<th @click="sortPullRequests('createdAtUtc')">
 								<div title="Time since Pull Request was created.">
 									<span class="mr-5">Age</span>
-									<i x-spread="iconClasses('CreatedAtUtc')"></i>
+									<i x-spread="iconClasses('createdAtUtc')"></i>
 								</div>
 							</th>
-							<th @click="sortPullRequests('Additions')">
+							<th @click="sortPullRequests('additions')">
 								<div title="Number of lines of code added in the Pull Request.">
 									<span>+</span>
-									<i x-spread="iconClasses('Additions')"></i>
+									<i x-spread="iconClasses('additions')"></i>
 								</div>
 							</th>
-							<th @click="sortPullRequests('Deletions')">
+							<th @click="sortPullRequests('deletions')">
 								<div title="Number of lines of code deleted in the Pull Request.">
 									<span>-</span>
-									<i x-spread="iconClasses('Deletions')"></i>
+									<i x-spread="iconClasses('deletions')"></i>
 								</div>
 							</th>
-							<th @click="sortPullRequests('Changes')">
+							<th @click="sortPullRequests('changes')">
 								<div title="Additions + Deletions.">
 									<span>+/-</span>
-									<i x-spread="iconClasses('Changes')"></i>
+									<i x-spread="iconClasses('changes')"></i>
 								</div>
 							</th>
-							<th @click="sortPullRequests('ChangedFiles')">
+							<th @click="sortPullRequests('changedFiles')">
 								<div title="Number of files changed the Pull Request.">
 									<span class="mr-5"># Files</span>
-									<i x-spread="iconClasses('ChangedFiles')"></i>
+									<i x-spread="iconClasses('changedFiles')"></i>
 								</div>
 							</th>
 						</tr>
 					</thead>
 					<tbody>
-						<template x-for="pr in prs" :key="pr.Number">
+						<template x-for="pr in prs" :key="pr.number">
 							<tr>
 								<td class="pr-5">
-									<a x-bind:href="pr.Url" x-text="`#${pr.Number}`"></a>
+									<a x-bind:href="pr.url" x-text="`#${pr.number}`"></a>
 								</td>
 								<td>
-									<a x-bind:href="pr.Url" x-text="pr.Title" target="_blank" class="text-blue-500"></a>
-									<template x-if="pr.Draft == true">
-										<span class="font-bold">[DRAFT]</span>
-									</template>
+									<div class="inline" title="Mergeable?">
+										<i x-show="pr.mergeable === 'MERGEABLE'" class="ri-check-line align-middle text-green-600"></i>
+										<i x-show="pr.mergeable !== 'MERGEABLE'" class="ri-close-line align-middle text-red-600"></i>
+									</div>
+									<a x-bind:href="pr.url" x-text="pr.title" target="_blank" 
+										:class="{'text-blue-600': !pr.isDraft  && pr.reviewDecision !== 'APPROVED', 'text-gray-900': pr.isDraft && pr.reviewDecision !== 'APPROVED', 'text-green-600': !pr.isDraft && pr.reviewDecision === 'APPROVED'}">
+									</a>
 								</td>
 								<td class="whitespace-nowrap">
-									<span x-text="getAge(pr.CreatedAtUtc)"></span>
+									<span x-text="getAge(pr.createdAtUtc)"></span>
 								</td>
 								<td>
-									<span class="text-green-700" x-text="`+${pr.Additions.toLocaleString()}`"></span>
+									<span class="text-green-700" x-text="`+${pr.additions.toLocaleString()}`"></span>
 								</td>
 								<td>
-									<span class="text-red-700" x-text="`-${pr.Deletions.toLocaleString()}`"></span>
+									<span class="text-red-700" x-text="`-${pr.deletions.toLocaleString()}`"></span>
 								</td>
 								<td>
-									<span class="text-black" x-text="`+${pr.Changes.toLocaleString()}`"></span>
+									<span class="text-black" x-text="`+${pr.changes.toLocaleString()}`"></span>
 								</td>
 								<td>
-									<span x-text="`${pr.ChangedFiles.toLocaleString()}`"></span>
+									<span x-text="`${pr.changedFiles.toLocaleString()}`"></span>
 								</td>
 							</tr>
 						</template>

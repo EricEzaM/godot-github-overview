@@ -2,8 +2,6 @@ function page()
 {
   return {
     prs: [],
-    files: [],
-    labels: [],
     metadata: {},
     currentSortBy: null,
     currentSortAsc: true,
@@ -11,30 +9,12 @@ function page()
 
     async loadPrs() {
       const prsJson = await ky.get(`prs.json`).json()
-      const filesJson = await ky.get(`files.json`).json()
       const metadataJson = await ky.get(`metadata.json`).json()
       this.prs = prsJson
-      this.files = filesJson
       this.metadata = metadataJson
 
-      this.setLabels(this.prs)
-      this.sortPullRequests('Changes')
+      this.sortPullRequests('changes')
       this.dataLoaded = true
-    },
-
-    setLabels(prs)
-    {
-      this.labels = prs
-        .map(pr => pr.Labels)
-        .flat()
-        .reduce((prev, curr) =>
-        {
-          if (prev.filter(l => l.Name == curr.Name).length == 0) {
-            prev.push(curr)
-          }
-
-          return prev
-        }, [])
     },
 
     sortPullRequests(sortBy)
@@ -106,6 +86,24 @@ function page()
             'text-gray-400': !currentlySorted,
             'ri-arrow-up-down-line': !currentlySorted,
             'text-black': currentlySorted,
+          }
+        }
+      }
+    },
+
+    titleClasses(isDraft, reviewDecision)
+    {
+      return {
+        [':class']()
+        {
+          if (!isDraft && reviewDecision === "APPROVED") {
+            return "text-green-600"
+          }
+          else if (!isDraft) {
+            return "text-blue-600"
+          }
+          else {
+            return "text-gray-600"
           }
         }
       }

@@ -13,9 +13,7 @@ thead {
 }
 
 th {
-  /* display: inline-flex; */
   align-items: center;
-
   padding: 0 0.5rem;
   white-space: nowrap;
   cursor: pointer;
