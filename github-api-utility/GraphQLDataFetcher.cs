@@ -30,11 +30,15 @@ namespace GodotGithubOverview
             // Create the request
             var req = new GraphQLRequest
             {
+                Variables = new
+				{
+                    resultsPerPage = ResultsPerPage
+				},
 				Query = @"
-					query ($cursor: String) {
+					query ($cursor: String, $resultsPerPage: Int) {
                       repository(owner: ""godotengine"", name: ""godot"") {
                         url
-                        pullRequests(first: 100, after: $cursor, states: OPEN) {
+                        pullRequests(first: $resultsPerPage, after: $cursor, states: OPEN) {
                           edges {
                             node {
                               number
@@ -100,6 +104,7 @@ namespace GodotGithubOverview
                     nodes.AddRange(res.Data.repository.pullRequests.edges.Select(e => e.node));
                     req.Variables = new
                     {
+                        resultsPerPage = ResultsPerPage,
                         cursor = nextCursor
                     };
 
