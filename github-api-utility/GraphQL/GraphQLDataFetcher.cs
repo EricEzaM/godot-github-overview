@@ -55,7 +55,7 @@ namespace GodotGithubOverview.GraphQL
         /// <param name="nodes">The nodes list which will be added to with the results.</param>
         /// <param name="failCount">The number of times the request has failed.</param>
         /// <returns>The result of the query.</returns>
-        private async Task<List<PullRequestNode>> GetPullRequestData(GraphQLRequest req, List<PullRequestNode> nodes, int failCount = 0)
+        private async Task GetPullRequestData(GraphQLRequest req, List<PullRequestNode> nodes, int failCount = 0)
 		{
 			try
 			{
@@ -72,31 +72,32 @@ namespace GodotGithubOverview.GraphQL
                         cursor = nextCursor
                     };
 
-                    return await GetPullRequestData(req, nodes);
+                    await GetPullRequestData(req, nodes);
                 }
                 else
                 {
                     Console.WriteLine("Thats all of them!");
-                    return nodes;
+                    return;
                 }
             }
 			catch (GraphQLHttpRequestException e)
 			{
-				if (failCount < 10)
+                failCount++;
+                Console.WriteLine("Getting Data Failed with exception: " + e.Message);
+
+				if (failCount < 100)
 				{
-                    failCount++;
                     ResultsPerPage = Math.Max(ResultsPerPage - 10, 10);
                     ((GraphQLRequestVariables)req.Variables).resultsPerPage = ResultsPerPage;
-
-                    Console.WriteLine("Getting Data Failed with exception: " + e.Message);
                     Console.WriteLine($"Failed {failCount} times. Retrying with {ResultsPerPage} results per page.");
 
-                    return await GetPullRequestData(req, nodes, failCount);
+                    await GetPullRequestData(req, nodes, failCount);
                 }
 				else
 				{
-                    Console.WriteLine("Failed 10 times, aborting.");
-                    throw e;
+                    Console.WriteLine("Failed 100 times, aborting.");
+                    nodes.Clear();
+                    return;
 				}
 			}
         }

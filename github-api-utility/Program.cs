@@ -1,12 +1,13 @@
 ﻿using GodotGithubOverview.GraphQL;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GodotGithubOverview
 {
 	class Program
 	{
-		static async Task Main(string[] args)
+		static async Task<int> Main(string[] args)
 		{
 			Console.WriteLine("Getting Data...");
 
@@ -15,13 +16,22 @@ namespace GodotGithubOverview
 			var dataFetcher = new GraphQLDataFetcher(accessToken);
 			var data = await dataFetcher.GetPullRequestData();
 
-			Utils.WriteObjectToJsonFile("prs", data);
-			Utils.WriteObjectToJsonFile("metadata", new
+			if (data.Any())
 			{
-				LastUpdated = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-			});
+				Utils.WriteObjectToJsonFile("prs", data);
+				Utils.WriteObjectToJsonFile("metadata", new
+				{
+					LastUpdated = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+				});
 
-			Console.WriteLine($"Done.");
+				Console.WriteLine($"Done.");
+				return 0;
+			}
+			else
+			{
+				Console.WriteLine($"Data was empty. No files written.");
+				return 1;
+			}
 		}
 	}
 }
