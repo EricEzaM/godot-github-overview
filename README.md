@@ -10,6 +10,7 @@ For Github information for [Godot](https://github.com/godotengine/godot) in a co
 - `build.sh` restores, builds and runs the .NET Core 3.1 application which uses the Github GraphQL API
   to download all Pull Requests and related information in the godot repository. The results
   are saved into a JSON file which is then copied to the directory of the static web page.
+  The build script can exit with code 1 if the dotnet application fails. This is so that the github action step fails.
 - Github Pages is used to serve the web static content.
 - The website uses [Alpine.js](https://github.com/alpinejs/alpine) and
   [Ky](https://github.com/sindresorhus/ky) to fetch the JSON from GitHub Pages
