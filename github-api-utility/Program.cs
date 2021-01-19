@@ -24,7 +24,8 @@ namespace GodotGithubOverview
 			Environment.SetEnvironmentVariable("ACCESS_TOKEN", "your-token-here");
 #endif
 			Console.WriteLine("Getting Data...");
-			var pullRequestData = await GraphQLDataFetcher.GetPullRequestData(Environment.GetEnvironmentVariable("ACCESS_TOKEN"));
+			var dataFetcher = new GraphQLDataFetcher();
+			var pullRequestData = await dataFetcher.GetPullRequestData(Environment.GetEnvironmentVariable("ACCESS_TOKEN"));
 
 			WriteObjectToJsonFile("prs", pullRequestData);
 			// Write some metadata to a different file.
