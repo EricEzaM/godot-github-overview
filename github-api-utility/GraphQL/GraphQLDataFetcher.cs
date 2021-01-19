@@ -89,8 +89,9 @@ namespace GodotGithubOverview.GraphQL
 				{
                     ResultsPerPage = Math.Max(ResultsPerPage - 10, 10);
                     ((GraphQLRequestVariables)req.Variables).resultsPerPage = ResultsPerPage;
-                    Console.WriteLine($"Failed {failCount} times. Retrying with {ResultsPerPage} results per page.");
+                    Console.WriteLine($"Failed {failCount} times. Retrying with {ResultsPerPage} results per page in 5 seconds.");
 
+                    Thread.Sleep(5000);
                     await GetPullRequestData(req, nodes, failCount);
                 }
 				else

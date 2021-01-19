@@ -80,6 +80,6 @@ namespace GodotGithubOverview.GraphQL
 	public class GraphQLRequestVariables
 	{
 		public int resultsPerPage { get; set; }
-		public string? cursor { get; set; }
+		public string cursor { get; set; }
 	}
 }
