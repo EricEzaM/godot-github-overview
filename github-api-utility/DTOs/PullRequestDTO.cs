@@ -1,9 +1,10 @@
-﻿using System;
+﻿using GodotGithubOverview.GraphQL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GodotGithubOverview.GraphQL
+namespace GodotGithubOverview.DTOs
 {
 	public class ReactionGroupDTO
 	{

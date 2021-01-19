@@ -1,54 +1,27 @@
-﻿using Octokit;
-using Octokit.Internal;
-using Octokit.Reactive;
+﻿using GodotGithubOverview.GraphQL;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace GodotGithubOverview
 {
 	class Program
 	{
-		public const string OWNER = "godotengine";
-		public const string REPO = "godot";
-
 		static async Task Main(string[] args)
 		{
-#if DEBUG
-			Environment.SetEnvironmentVariable("ACCESS_TOKEN", "your-token-here");
-#endif
 			Console.WriteLine("Getting Data...");
-			var dataFetcher = new GraphQLDataFetcher();
-			var pullRequestData = await dataFetcher.GetPullRequestData(Environment.GetEnvironmentVariable("ACCESS_TOKEN"));
 
-			WriteObjectToJsonFile("prs", pullRequestData);
-			// Write some metadata to a different file.
-			WriteObjectToJsonFile("metadata", new
+			// Set the ACCESS_TOKEN in your environment variables, or use a temporary debug one in Properties/launchSettings.json (Visual Studio)
+			var accessToken = Environment.GetEnvironmentVariable("ACCESS_TOKEN");
+			var dataFetcher = new GraphQLDataFetcher(accessToken);
+			var data = await dataFetcher.GetPullRequestData();
+
+			Utils.WriteObjectToJsonFile("prs", data);
+			Utils.WriteObjectToJsonFile("metadata", new
 			{
 				LastUpdated = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
 			});
 
 			Console.WriteLine($"Done.");
-		}
-
-		public static void WriteObjectToJsonFile<T>(string filename, T inputObject)
-		{
-			var prsJson = JsonSerializer.Serialize(inputObject, new JsonSerializerOptions
-			{
-				WriteIndented = true,
-			});
-
-			var filepath = Path.Combine(Environment.CurrentDirectory, filename + ".json");
-			File.Delete(filepath);
-			File.WriteAllText(filepath, prsJson);
-
-			Console.WriteLine($"JSON File '{filename}' written to path {filepath}");
 		}
 	}
 }

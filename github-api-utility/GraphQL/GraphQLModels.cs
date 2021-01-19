@@ -76,4 +76,10 @@ namespace GodotGithubOverview.GraphQL
 	{
 		public Repository repository { get; set; }
 	}
+
+	public class GraphQLRequestVariables
+	{
+		public int resultsPerPage { get; set; }
+		public string? cursor { get; set; }
+	}
 }
