@@ -107,6 +107,12 @@
 									<i x-spread="sortingIconClasses('createdAtUtc')"></i>
 								</div>
 							</th>
+							<th @click="sortPullRequests('totalPositiveReactions')">
+								<div title="Total positive reactions on the Pull Request, with no double-counting of users who reacted multiple times.">
+									<i class="mr-5 ri-thumb-up-fill"></i>
+									<i x-spread="sortingIconClasses('totalPositiveReactions')"></i>
+								</div>
+							</th>
 							<th @click="sortPullRequests('additions')">
 								<div title="Number of lines of code added in the Pull Request.">
 									<span>+</span>
@@ -150,6 +156,9 @@
 								</td>
 								<td class="whitespace-nowrap">
 									<span x-text="getAge(pr.createdAtUtc)"></span>
+								</td>
+								<td>
+									<span x-text="pr.totalPositiveReactions"></span>
 								</td>
 								<td>
 									<span class="text-green-700" x-text="`+${pr.additions.toLocaleString()}`"></span>
