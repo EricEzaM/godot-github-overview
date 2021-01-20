@@ -70,7 +70,7 @@ function page()
       }
     },
 
-    iconClasses(sortBy)
+    sortingIconClasses(sortBy)
     {
       const self = this
 

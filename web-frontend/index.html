@@ -93,7 +93,7 @@
 							<th @click="sortPullRequests('number')">
 								<div title="Pull Request Number. Higher = newer, lower = older.">
 									<span>PR</span>
-									<i x-spread="iconClasses('number')"></i>
+									<i x-spread="sortingIconClasses('number')"></i>
 								</div>
 							</th>
 							<th>
@@ -104,31 +104,31 @@
 							<th @click="sortPullRequests('createdAtUtc')">
 								<div title="Time since Pull Request was created.">
 									<span class="mr-5">Age</span>
-									<i x-spread="iconClasses('createdAtUtc')"></i>
+									<i x-spread="sortingIconClasses('createdAtUtc')"></i>
 								</div>
 							</th>
 							<th @click="sortPullRequests('additions')">
 								<div title="Number of lines of code added in the Pull Request.">
 									<span>+</span>
-									<i x-spread="iconClasses('additions')"></i>
+									<i x-spread="sortingIconClasses('additions')"></i>
 								</div>
 							</th>
 							<th @click="sortPullRequests('deletions')">
 								<div title="Number of lines of code deleted in the Pull Request.">
 									<span>-</span>
-									<i x-spread="iconClasses('deletions')"></i>
+									<i x-spread="sortingIconClasses('deletions')"></i>
 								</div>
 							</th>
 							<th @click="sortPullRequests('changes')">
 								<div title="Additions + Deletions.">
 									<span>+/-</span>
-									<i x-spread="iconClasses('changes')"></i>
+									<i x-spread="sortingIconClasses('changes')"></i>
 								</div>
 							</th>
 							<th @click="sortPullRequests('changedFiles')">
 								<div title="Number of files changed the Pull Request.">
 									<span class="mr-5"># Files</span>
-									<i x-spread="iconClasses('changedFiles')"></i>
+									<i x-spread="sortingIconClasses('changedFiles')"></i>
 								</div>
 							</th>
 						</tr>
