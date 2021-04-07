@@ -3,8 +3,10 @@ function page()
   return {
     prs: [],
     metadata: {},
+    labels: [],
     currentSortBy: null,
     currentSortAsc: true,
+    labelFilter: "",
     dataLoaded: false,
 
     async loadPrs() {
@@ -14,6 +16,7 @@ function page()
       this.metadata = metadataJson
 
       this.sortPullRequests('changes')
+      this.getLabelsFromPullRequests()
       this.dataLoaded = true
     },
 
@@ -27,6 +30,40 @@ function page()
       }
 
       this.prs.sort((a, b) => this.pullRequestCompareFunction(a, b, this.currentSortBy, this.currentSortAsc))
+    },
+
+    getLabelsFromPullRequests()
+    {
+      let localLabels = this.prs.reduce((acc, curr, idx, arr) =>
+      {
+        // Loop through each label in the current pull request
+        curr.labels.forEach(label =>
+        {
+          // If it does not exist in the accumulator, add it.
+          let exists = acc.filter(l =>
+            {
+              return l.name == label.name
+            })
+
+          if (exists.length == 0)
+          {
+            label.prefix = toTitleCase(label.name.includes(":") ? label.name.substring(0, label.name.indexOf(":")) : "")
+            label.suffix = toTitleCase(label.name.includes(":") ? label.name.substring(label.name.indexOf(":") + 1) : label.name)
+            acc.push(label)
+          }
+        })
+
+        return acc
+      }, [])
+
+      localLabels.sort((a, b) => a.prefix.localeCompare(b.prefix) || a.suffix.localeCompare(b.suffix))
+
+      this.labels = localLabels
+    },
+
+    onLabelFilterToggled(labelName)
+    {
+      this.labelFilter = labelName
     },
 
     /**
@@ -109,4 +146,8 @@ function page()
       }
     }
   }
+}
+
+function toTitleCase(input) {
+  return input.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
 }

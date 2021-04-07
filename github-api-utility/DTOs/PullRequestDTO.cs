@@ -19,6 +19,12 @@ namespace GodotGithubOverview.DTOs
 		public long submittedAtUtc { get; set; }
 	}
 
+	public class LabelDTO
+	{
+		public string name { get; set; }
+		public string color { get; set; }
+	}
+
 	public class PullRequestDTO
 	{
 		public int number { get; set; }
@@ -38,6 +44,7 @@ namespace GodotGithubOverview.DTOs
 		public string url { get; set; }
 		public List<ReviewDTO> reviews { get; set; }
 		public string reviewDecision { get; set; }
+		public List<LabelDTO> labels { get; set; }
 
 		public PullRequestDTO(PullRequestNode fromNode)
 		{
@@ -78,6 +85,12 @@ namespace GodotGithubOverview.DTOs
 				submittedAtUtc = n.submittedAt.ToUnixTimeMilliseconds()
 			}).ToList();
             reviewDecision = fromNode.reviewDecision;
+
+			labels = fromNode.labels.nodes.Select(n => new LabelDTO
+			{
+				name = n.name,
+				color = n.color
+			}).ToList();
 		}
 
 		private string GetUserName(User user)

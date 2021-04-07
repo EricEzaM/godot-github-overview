@@ -37,6 +37,17 @@ namespace GodotGithubOverview.GraphQL
 		public List<Review> nodes { get; set; }
 	}
 
+	public class Label
+	{
+		public string name { get; set; }
+		public string color { get; set; }
+	}
+
+	public class Labels
+	{
+		public List<Label> nodes { get; set; }
+	}
+
 	public class PullRequestNode
 	{
 		public int number { get; set; }
@@ -54,6 +65,7 @@ namespace GodotGithubOverview.GraphQL
 		public string url { get; set; }
 		public Reviews reviews { get; set; }
 		public string reviewDecision { get; set; }
+		public Labels labels { get; set; }
 	}
 
 	public class PullRequestEdge

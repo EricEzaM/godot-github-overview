@@ -56,34 +56,48 @@
 			
 			<template x-if="dataLoaded">
 				<div>
+					<h3 class="text-center font-bold text-lg">Pull Request Label Filters</h3>
+					<div class="text-center">
+						<select class="mb-3 border border-black rounded-md" @change="onLabelFilterToggled($event.target.value)">
+							<option value="">All</option>
+
+							<template x-for="prefix in [...new Set(labels.map(l => l.prefix))]">
+								<optgroup :label="prefix === '' ? 'General' : prefix">
+									<template x-for="label in labels.filter(l => l.prefix == prefix)">
+										<option x-text="label.suffix" :value="label.name"></option>
+									</template>
+								</optgroup>
+							</template>
+						</select>
+					</div>
+
 					<h3 class="text-center font-bold text-lg">Pull Request Impact Overview</h3>
-					<div class="flex">
+					<div class="flex mb-3">
 						<div class="flex mx-auto">
 							<div class="px-3 flex-initial bg-green-500 rounded-l-md">
 								<span class="font-semibold">&leq; 5 Changes: </span>
-								<span class="font-bold" x-text="`${prs.filter(pr => pr.changes <= 5).length} PRs`"></span>
+								<span class="font-bold" x-text="`${prs.filter(pr => pr.labels.map(l => l.name).includes(labelFilter) && pr.changes <= 5).length} PRs`"></span>
 							</div>
 							<div class="px-3 flex-initial bg-green-400">
 								<span class="font-semibold">&leq; 10 Changes: </span>
-								<span class="font-bold" x-text="`${prs.filter(pr => pr.changes <= 10).length} PRs`"></span>
+								<span class="font-bold" x-text="`${prs.filter(pr => pr.labels.map(l => l.name).includes(labelFilter) && pr.changes <= 10).length} PRs`"></span>
 							</div>
 							<div class="px-3 flex-initial bg-green-300">
 								<span class="font-semibold">&leq; 25 Changes: </span>
-								<span class="font-bold" x-text="`${prs.filter(pr => pr.changes <= 25).length} PRs`"></span>
+								<span class="font-bold" x-text="`${prs.filter(pr => pr.labels.map(l => l.name).includes(labelFilter) && pr.changes <= 25).length} PRs`"></span>
 							</div>
 							<div class="px-3 flex-initial bg-green-200">
 								<span class="font-semibold">&leq; 50 Changes: </span>
-								<span class="font-bold" x-text="`${prs.filter(pr => pr.changes <= 50).length} PRs`"></span>
+								<span class="font-bold" x-text="`${prs.filter(pr => pr.labels.map(l => l.name).includes(labelFilter) && pr.changes <= 50).length} PRs`"></span>
 							</div>
 							<div class="px-3 flex-initial bg-green-100 rounded-r-md">
 								<span class="font-semibold">&leq; 100 Changes: </span>
-								<span class="font-bold" x-text="`${prs.filter(pr => pr.changes <= 100).length} PRs`"></span>
+								<span class="font-bold" x-text="`${prs.filter(pr => pr.labels.map(l => l.name).includes(labelFilter) && pr.changes <= 100).length} PRs`"></span>
 							</div>
 						</div>
 					</div>
 				</div>
 			</template>
-			<br>
 
 			<div x-show="dataLoaded">
 				<h3 class="text-center font-bold text-lg">Pull Requests</h3>
@@ -141,7 +155,7 @@
 					</thead>
 					<tbody>
 						<template x-for="pr in prs" :key="pr.number">
-							<tr>
+							<tr x-show="pr.labels.map(l => l.name).includes(labelFilter) || labelFilter === ''">
 								<td class="pr-5">
 									<a x-bind:href="pr.url" x-text="`#${pr.number}`"></a>
 								</td>
@@ -150,7 +164,7 @@
 										<i x-show="pr.mergeable === 'MERGEABLE'" class="ri-check-line align-middle text-green-600"></i>
 										<i x-show="pr.mergeable !== 'MERGEABLE'" class="ri-close-line align-middle text-red-600"></i>
 									</div>
-									<a x-bind:href="pr.url" x-text="pr.title" target="_blank" 
+									<a x-bind:href="pr.url" x-text="pr.title" target="_blank"
 										:class="{'text-blue-600': !pr.isDraft  && pr.reviewDecision !== 'APPROVED', 'text-gray-900': pr.isDraft && pr.reviewDecision !== 'APPROVED', 'text-green-600': !pr.isDraft && pr.reviewDecision === 'APPROVED'}">
 									</a>
 								</td>

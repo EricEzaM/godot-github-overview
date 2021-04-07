@@ -48,6 +48,12 @@ namespace GodotGithubOverview.GraphQL
                                         submittedAt
                                     }
                                 }
+                                labels (first: 100) {
+                                    nodes {
+                                        name
+                                        color
+                                    }
+                                }
                             }
                             cursor
                         }
