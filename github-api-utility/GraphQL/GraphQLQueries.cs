@@ -6,7 +6,7 @@ namespace GodotGithubOverview.GraphQL
 {
 	public class GraphQLQueries
 	{
-        public const string GetPullRequests =
+        public const string GetOpenPullRequests =
             @"
 			query ($cursor: String, $resultsPerPage: Int) {
                 repository(owner: ""godotengine"", name: ""godot"") {
@@ -27,6 +27,7 @@ namespace GodotGithubOverview.GraphQL
                                 }
                                 createdAt
                                 updatedAt
+                                closedAt
                                 isDraft
                                 mergeable
                                 reactionGroups {
@@ -54,6 +55,25 @@ namespace GodotGithubOverview.GraphQL
                                         color
                                     }
                                 }
+                            }
+                            cursor
+                        }
+                    }
+                }
+            }";
+
+        public const string GetAllPullRequests =
+            @"
+			query ($cursor: String, $resultsPerPage: Int) {
+                repository(owner: ""godotengine"", name: ""godot"") {
+                    pullRequests(first: $resultsPerPage, after: $cursor) {
+                        edges {
+                            node {
+                                number
+                                createdAt
+                                updatedAt
+                                closedAt
+                                isDraft
                             }
                             cursor
                         }

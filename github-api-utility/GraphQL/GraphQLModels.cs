@@ -58,6 +58,7 @@ namespace GodotGithubOverview.GraphQL
 		public User author { get; set; }
 		public DateTimeOffset createdAt { get; set; }
 		public DateTimeOffset updatedAt { get; set; }
+		public DateTimeOffset? closedAt { get; set; }
 		public bool isDraft { get; set; }
 		public string mergeable { get; set; }
 		public List<ReactionGroup> reactionGroups { get; set; }

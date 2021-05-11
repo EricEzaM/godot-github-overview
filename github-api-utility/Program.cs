@@ -1,5 +1,7 @@
-﻿using GodotGithubOverview.GraphQL;
+﻿using GodotGithubOverview.DTOs;
+using GodotGithubOverview.GraphQL;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,11 +16,25 @@ namespace GodotGithubOverview
 			// Set the ACCESS_TOKEN in your environment variables, or use a temporary debug one in Properties/launchSettings.json (Visual Studio)
 			var accessToken = Environment.GetEnvironmentVariable("ACCESS_TOKEN");
 			var dataFetcher = new GraphQLDataFetcher(accessToken);
-			var data = await dataFetcher.GetPullRequestData();
 
-			if (data.Any())
+			Console.WriteLine($"Getting Open PRs.");
+			var openPrData = await dataFetcher.GetOpenPullRequests();
+
+			Console.WriteLine($"Getting Historical Data for PRs.");
+			var historicalData = await dataFetcher.GetPullRequestsHistoricalData();
+
+			if (openPrData.Any())
 			{
-				Utils.WriteObjectToJsonFile("prs", data);
+				Utils.WriteObjectToJsonFile("prs", openPrData);
+			}
+
+			if (historicalData.Any())
+			{
+				Utils.WriteObjectToJsonFile("pr_historical", historicalData);
+			}
+
+			if (historicalData.Any() || openPrData.Any())
+			{
 				Utils.WriteObjectToJsonFile("metadata", new
 				{
 					LastUpdated = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()

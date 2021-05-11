@@ -36,6 +36,7 @@ namespace GodotGithubOverview.DTOs
 		public string author { get; set; }
 		public long createdAtUtc { get; set; }
 		public long updatedAtUtc { get; set; }
+		public long closedAtUtc { get; set; }
 		public bool isDraft { get; set; }
 		public string mergeable { get; set; }
 		public List<ReactionGroupDTO> reactions { get; set; }
@@ -56,6 +57,8 @@ namespace GodotGithubOverview.DTOs
             changedFiles = fromNode.changedFiles;
 			author = GetUserName(fromNode.author);
 			createdAtUtc = fromNode.createdAt.ToUnixTimeMilliseconds();
+			updatedAtUtc = fromNode.updatedAt.ToUnixTimeMilliseconds();
+			closedAtUtc = fromNode.updatedAt.ToUnixTimeMilliseconds();
             isDraft = fromNode.isDraft;
             mergeable = fromNode.mergeable;
             reactions = fromNode.reactionGroups.Select(rg => new ReactionGroupDTO
@@ -76,7 +79,6 @@ namespace GodotGithubOverview.DTOs
 				.Distinct()
 				.Count();
 
-			updatedAtUtc = fromNode.updatedAt.ToUnixTimeMilliseconds();
             url = fromNode.url;
             reviews = fromNode.reviews.nodes.Select(n => new ReviewDTO
 			{

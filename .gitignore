@@ -1,6 +1,4 @@
-web-frontend/prs.json
-web-frontend/files.json
-web-frontend/metadata.json
+web-frontend/data/
 
 # Ignore .NET project properties files
 Properties/

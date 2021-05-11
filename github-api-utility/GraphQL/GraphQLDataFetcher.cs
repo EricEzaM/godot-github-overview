@@ -28,12 +28,12 @@ namespace GodotGithubOverview.GraphQL
             _client = new GraphQLHttpClient(graphql, new SystemTextJsonSerializer(), http);
         }
 
-		public async Task<IEnumerable<PullRequestDTO>> GetPullRequestData()
+		public async Task<IEnumerable<PullRequestDTO>> GetOpenPullRequests()
 		{
             // Create the request
             var req = new GraphQLRequest
             {
-                Query = GraphQLQueries.GetPullRequests,
+                Query = GraphQLQueries.GetOpenPullRequests,
                 Variables = new GraphQLRequestVariables
                 {
                     resultsPerPage = ResultsPerPage
@@ -47,6 +47,43 @@ namespace GodotGithubOverview.GraphQL
             // Map the results to the DTO for better usability on the client side.
             return nodes.Select(prn => new PullRequestDTO(prn));
 		}
+
+        public async Task<IEnumerable<HistoricalDatapointDTO>> GetPullRequestsHistoricalData()
+		{
+            // Create the request
+            var req = new GraphQLRequest
+            {
+                Query = GraphQLQueries.GetAllPullRequests,
+                Variables = new GraphQLRequestVariables
+                {
+                    resultsPerPage = ResultsPerPage
+                }
+            };
+
+            // Send the request
+            // Fortunately the PullRequestNode is still valid even for the "simple" query which only gets a few values for each pull request.
+            // The rest of the values in the PullRequestNode object will be null.
+            var nodes = new List<PullRequestNode>();
+            await GetPullRequestData(req, nodes);
+
+            var firstPrDate = nodes.Min(prn => prn.createdAt);
+            // Begin the loop at the date of the first PR.
+            var date = new DateTimeOffset(firstPrDate.Year, firstPrDate.Month, firstPrDate.Day, 0, 0, 0, TimeSpan.Zero);
+
+            var results = new List<HistoricalDatapointDTO>();
+            // Aggregate by week.
+            while ((date = date.AddDays(7)) <= DateTimeOffset.UtcNow)
+			{
+                var count = nodes.Count(prn => prn.createdAt <= date && (prn.closedAt == null || prn.closedAt >= date));
+                results.Add(new HistoricalDatapointDTO()
+                {
+                    date = date.ToUnixTimeMilliseconds(),
+                    count = count
+                });
+            }
+
+            return results;
+        }
 
         /// <summary>
         /// Method called recursively to get all PullRequests from all pages of a request.
@@ -76,7 +113,7 @@ namespace GodotGithubOverview.GraphQL
                 }
                 else
                 {
-                    Console.WriteLine("Thats all of them!");
+                    Console.WriteLine("Complete - received all data.");
                     return;
                 }
             }

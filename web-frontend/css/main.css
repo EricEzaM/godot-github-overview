@@ -1,62 +1,63 @@
 table {
-  border-spacing: 0px;
-  border-collapse: collapse;
-  width: 100%;
-  max-width: 100%;
-  margin-bottom: 15px;
-  background-color: transparent;
-  text-align: left;
+	border-spacing: 0px;
+	border-collapse: collapse;
+	width: 100%;
+	max-width: 100%;
+	background-color: transparent;
+	text-align: left;
 }
 
 thead {
-  font-weight: bold;
+	font-weight: bold;
 }
 
 th {
-  align-items: center;
-  padding: 0 0.5rem;
-  white-space: nowrap;
-  cursor: pointer;
-  border-width: 2px;
+	align-items: center;
+	padding: 0 0.5rem;
+	white-space: nowrap;
+	cursor: pointer;
+	border-width: 2px;
 }
 
 th > div {
-  display: flex;
-  justify-content: space-between;
+	display: flex;
+	justify-content: space-between;
 }
 
 tr:hover {
-  background-color: hsla(0, 0%, 50%, 0.075);
+	background-color: hsla(0, 0%, 50%, 0.075);
 }
 
 tr:nth-child(even) {
-  background-color: hsla(0, 0%, 50%, 0.1);
+	background-color: hsla(0, 0%, 50%, 0.1);
 }
 
 tr:nth-child(even):hover {
-  background-color: hsla(0, 0%, 50%, 0.175);
+	background-color: hsla(0, 0%, 50%, 0.175);
 }
 
 th:hover {
-  background-color: hsla(0, 0%, 50%, 0.175);
+	background-color: hsla(0, 0%, 50%, 0.175);
 }
 
 td {
-  padding: 0 .5rem;
+	padding: 0 0.5rem;
 }
 
 a:hover {
-  filter: brightness(117.5%);
+	filter: brightness(117.5%);
 }
 
 a:active {
-  filter: brightness(82.5%);
+	filter: brightness(82.5%);
 }
 
 .loading-spinner {
-  animation: spin 1s linear infinite
+	animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  100% { transform: rotate(360deg); }
+	100% {
+		transform: rotate(360deg);
+	}
 }
