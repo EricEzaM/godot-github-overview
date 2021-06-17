@@ -24,10 +24,10 @@ jobs:
 
         # GH Pages Deployment
       - name: GH Pages Deployment
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: ./web-frontend
-          SINGLE_COMMIT: true
+          token: ${{ secrets.ACCESS_TOKEN }}
+          branch: gh-pages
+          folder: ./web-frontend
+          single-commit: true
 
