@@ -26,7 +26,7 @@ jobs:
       - name: GH Pages Deployment
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          # token: ${{ secrets.ACCESS_TOKEN }}
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
           branch: gh-pages
           folder: ./web-frontend
           single-commit: true
