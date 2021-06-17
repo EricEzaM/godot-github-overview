@@ -26,6 +26,8 @@ jobs:
       - name: GH Pages Deployment
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
+          git-config-name: EricEzaM-bot
+          git-config-email: 86031079+EricEzaM-bot@users.noreply.github.com
           ssh-key: ${{ secrets.DEPLOY_KEY }}
           branch: gh-pages
           folder: ./web-frontend
