@@ -1,8 +1,9 @@
 # Godot Github Overview
 
-For Github information for [Godot](https://github.com/godotengine/godot) in a convenient way 
+View Github information for [Godot](https://github.com/godotengine/godot) in a convenient way
 
 - Pull Requests - The aim is to give an overview of PRs which can be quickly reviewed and merged in order to clear out the backlog of PRs faster.
+- Pull Request History - a timeseries chart of open pull requests over time.
 - More features to come...
 
 ## How it works
