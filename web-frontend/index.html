@@ -311,6 +311,13 @@
 				>
 					&darr; Load More &darr;
 				</button>
+				<button
+					x-show="prs.length > numPrsToRender"
+					class="w-full bg-blue-300 font-bold"
+					@click="numPrsToRender = Number.MAX_VALUE"
+				>
+					&darr; Load All &darr;
+				</button>
 			</div>
 
 			<div x-show="currentPage === 1">
