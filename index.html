@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="author" content="Godot Engine" />
+		<meta name="description" content="View Godot Pull Requests" />
+		<title>Godot Pull Requests</title>
+		<link rel="icon" href="favicon.png" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="thirdparty/tailwind.min.css" />
+		<link rel="stylesheet" href="thirdparty/remixicon/remixicon.css" />
+		<script defer src="thirdparty/ky.umd.min.js"></script>
+		<script defer src="thirdparty/alpine.min.js"></script>
+		<script defer src="thirdparty/chartjs.min.js"></script>
+		<script defer src="thirdparty/luxon.min.js"></script>
+		<script defer src="thirdparty/chartjs-adapter-luxon.js"></script>
+		<script defer src="thirdparty/chartjs-plugin-annotation.min.js"></script>
+		<script src="js/index.js"></script>
+	</head>
+	<body
+		x-data="page()"
+		x-init="loadPrs()"
+		class="max-w-screen-xl mx-auto font-sans leading-relaxed text-gray-800"
+	>
+		<main class="container mx-auto">
+			<div class="my-10">
+				<h1 class="font-bold text-4xl text-center text-gray-700">
+					Godot Developer Pull Request Utility
+				</h1>
+				<p x-show="dataLoaded" class="mt-2 text-center text-sm">
+					<span>Last Updated: </span>
+					<span
+						x-text="`${new Date(metadata.LastUpdated).toLocaleDateString()} ${new Date(metadata.LastUpdated).toLocaleTimeString()} Local Time`"
+					></span>
+				</p>
+
+				<p class="text-center text-sm">
+					Report bugs, give feedback, and contribute on
+					<a
+						class="text-blue-500"
+						href="https://github.com/EricEzaM/godot-github-overview"
+						>GitHub</a
+					>.
+				</p>
+			</div>
+
+			<div class="flex mb-2">
+				<button
+					@click="currentPage = 0"
+					:class="{'border-blue-500 bg-blue-100': currentPage === 0, 'border-blue-200 bg-blue-50 text-gray-400 hover:text-gray-800': currentPage !== 0}"
+					class="flex-1 border-b-4 font-bold"
+				>
+					Pull Request List
+				</button>
+				<button
+					@click="currentPage = 1; generateBurndownPage()"
+					:class="{'border-blue-500 bg-blue-100': currentPage === 1, 'border-blue-200 bg-blue-50 text-gray-400 hover:text-gray-800': currentPage !== 1}"
+					class="flex-1 border-b-4 font-bold"
+				>
+					Pull Request Burndown
+				</button>
+			</div>
+
+			<div x-show="currentPage === 0" class="mb-4">
+				<p>
+					View pull Requests for
+					<a class="text-blue-500" href="https://github.com/godotengine/godot"
+						>godotengine/godot</a
+					>.
+				</p>
+
+				<ul class="list-disc list-inside pl-5">
+					<li>Click on headers to sort the table.</li>
+					<li>Hover over headers for more information.</li>
+					<li>Click on Title to go to the Pull Request page.</li>
+				</ul>
+
+				<details>
+					<summary>Icons & Colors Legend</summary>
+
+					<div class="ml-1 pl-5 border-l-2 border-black">
+						<p>
+							<span class="text-blue-600">PR is ready for review</span> /
+							<span class="text-gray-900">PR is in draft status</span> /
+							<span class="text-green-600"
+								>PR has been reviewed & approved</span
+							>
+						</p>
+						<div>
+							<i class="ri-check-line align-middle text-green-600"></i
+							><span>PR is Mergeable</span>
+						</div>
+						<div>
+							<i class="ri-close-line align-middle text-red-600"></i
+							><span>PR is not Mergeable</span>
+						</div>
+					</div>
+				</details>
+
+				<div x-show="!dataLoaded" class="w-full text-center text-2xl mt-3">
+					<span>Data Loading...</span>
+					<i class="ml-3 absolute loading-spinner ri-refresh-fill"></i>
+				</div>
+
+				<template x-if="dataLoaded">
+					<div>
+						<div>
+							<h3 class="text-center font-bold text-lg">
+								Pull Request Label Filters
+							</h3>
+							<div class="text-center">
+								<select
+									class="mb-3 border border-black rounded-md"
+									@change="onLabelFilterToggled($event.target.value)"
+								>
+									<option value="">All</option>
+
+									<template
+										x-for="prefix in [...new Set(labels.map(l => l.prefix))]"
+									>
+										<optgroup :label="prefix === '' ? 'General' : prefix">
+											<template
+												x-for="label in labels.filter(l => l.prefix == prefix)"
+											>
+												<option
+													x-text="label.suffix"
+													:value="label.name"
+												></option>
+											</template>
+										</optgroup>
+									</template>
+								</select>
+							</div>
+
+							<h3 class="text-center font-bold text-lg">
+								Pull Request Impact Overview
+							</h3>
+							<div class="flex mb-3">
+								<div class="flex mx-auto">
+									<div class="px-3 flex-initial bg-green-500 rounded-l-md">
+										<span class="font-semibold">&leq; 5 Changes: </span>
+										<span
+											class="font-bold"
+											x-text="`${prs.filter(pr => pr.changes <= 5).length} PRs`"
+										></span>
+									</div>
+									<div class="px-3 flex-initial bg-green-400">
+										<span class="font-semibold">&leq; 10 Changes: </span>
+										<span
+											class="font-bold"
+											x-text="`${prs.filter(pr => pr.changes <= 10).length} PRs`"
+										></span>
+									</div>
+									<div class="px-3 flex-initial bg-green-300">
+										<span class="font-semibold">&leq; 25 Changes: </span>
+										<span
+											class="font-bold"
+											x-text="`${prs.filter(pr => pr.changes <= 25).length} PRs`"
+										></span>
+									</div>
+									<div class="px-3 flex-initial bg-green-200">
+										<span class="font-semibold">&leq; 50 Changes: </span>
+										<span
+											class="font-bold"
+											x-text="`${prs.filter(pr => pr.changes <= 50).length} PRs`"
+										></span>
+									</div>
+									<div class="px-3 flex-initial bg-green-100 rounded-r-md">
+										<span class="font-semibold">&leq; 100 Changes: </span>
+										<span
+											class="font-bold"
+											x-text="`${prs.filter(pr => pr.changes <= 100).length} PRs`"
+										></span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<h3 class="text-center font-bold text-lg">Pull Requests</h3>
+						<table>
+							<thead>
+								<tr class="text-left">
+									<th @click="sortPullRequests('number')">
+										<div
+											title="Pull Request Number. Higher = newer, lower = older."
+										>
+											<span>PR</span>
+											<i x-spread="sortingIconClasses('number')"></i>
+										</div>
+									</th>
+									<th>
+										<div
+											title="Title. Icon Tick = Mergeable, Icon Cross = Not Mergeable."
+										>
+											<span>Title</span>
+										</div>
+									</th>
+									<th @click="sortPullRequests('createdAtUtc')">
+										<div title="Time since Pull Request was created.">
+											<span class="mr-5">Age</span>
+											<i x-spread="sortingIconClasses('createdAtUtc')"></i>
+										</div>
+									</th>
+									<th @click="sortPullRequests('totalPositiveReactions')">
+										<div
+											title="Total positive reactions on the Pull Request, with no double-counting of users who reacted multiple times."
+										>
+											<i class="mr-5 ri-thumb-up-fill"></i>
+											<i
+												x-spread="sortingIconClasses('totalPositiveReactions')"
+											></i>
+										</div>
+									</th>
+									<th @click="sortPullRequests('additions')">
+										<div
+											title="Number of lines of code added in the Pull Request."
+										>
+											<span>+</span>
+											<i x-spread="sortingIconClasses('additions')"></i>
+										</div>
+									</th>
+									<th @click="sortPullRequests('deletions')">
+										<div
+											title="Number of lines of code deleted in the Pull Request."
+										>
+											<span>-</span>
+											<i x-spread="sortingIconClasses('deletions')"></i>
+										</div>
+									</th>
+									<th @click="sortPullRequests('changes')">
+										<div title="Additions + Deletions.">
+											<span>+/-</span>
+											<i x-spread="sortingIconClasses('changes')"></i>
+										</div>
+									</th>
+									<th @click="sortPullRequests('changedFiles')">
+										<div title="Number of files changed the Pull Request.">
+											<span class="mr-5"># Files</span>
+											<i x-spread="sortingIconClasses('changedFiles')"></i>
+										</div>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<template
+									x-for="pr in prs.filter((pr, i) => i < numPrsToRender)"
+									:key="pr.number"
+								>
+									<tr>
+										<td class="pr-5">
+											<a x-bind:href="pr.url" x-text="`#${pr.number}`"></a>
+										</td>
+										<td>
+											<div class="inline" title="Mergeable?">
+												<i
+													x-show="pr.mergeable === 'MERGEABLE'"
+													class="ri-check-line align-middle text-green-600"
+												></i>
+												<i
+													x-show="pr.mergeable !== 'MERGEABLE'"
+													class="ri-close-line align-middle text-red-600"
+												></i>
+											</div>
+											<a
+												x-bind:href="pr.url"
+												x-text="pr.title"
+												target="_blank"
+												:class="{'text-blue-600': !pr.isDraft  && pr.reviewDecision !== 'APPROVED', 'text-gray-900': pr.isDraft && pr.reviewDecision !== 'APPROVED', 'text-green-600': !pr.isDraft && pr.reviewDecision === 'APPROVED'}"
+											>
+											</a>
+										</td>
+										<td class="whitespace-nowrap">
+											<span x-text="getAge(pr.createdAtUtc)"></span>
+										</td>
+										<td>
+											<span x-text="pr.totalPositiveReactions"></span>
+										</td>
+										<td>
+											<span
+												class="text-green-700"
+												x-text="`+${pr.additions.toLocaleString()}`"
+											></span>
+										</td>
+										<td>
+											<span
+												class="text-red-700"
+												x-text="`-${pr.deletions.toLocaleString()}`"
+											></span>
+										</td>
+										<td>
+											<span
+												class="text-black"
+												x-text="`+${pr.changes.toLocaleString()}`"
+											></span>
+										</td>
+										<td>
+											<span
+												x-text="`${pr.changedFiles.toLocaleString()}`"
+											></span>
+										</td>
+									</tr>
+								</template>
+							</tbody>
+						</table>
+					</div>
+				</template>
+				<button
+					x-show="prs.length > numPrsToRender"
+					class="w-full bg-blue-100 font-bold"
+					@click="numPrsToRender += 100"
+				>
+					&darr; Load More &darr;
+				</button>
+				<button
+					x-show="prs.length > numPrsToRender"
+					class="w-full bg-blue-300 font-bold"
+					@click="numPrsToRender = Number.MAX_VALUE"
+				>
+					&darr; Load All &darr;
+				</button>
+			</div>
+
+			<div x-show="currentPage === 1">
+				<div style="position: relative">
+					<canvas id="chart"></canvas>
+				</div>
+			</div>
+		</main>
+	</body>
+</html>
